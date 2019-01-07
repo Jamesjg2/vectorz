@@ -167,7 +167,7 @@ public abstract class AVector implements IVector, Cloneable, Comparable<AVector>
 	}
 
 	/**
-	 * Fills a vector with a given value
+	 * Fills the entire vector with a given value
 	 * @param value
 	 */
 	public void fill(double value) {
@@ -580,13 +580,14 @@ public abstract class AVector implements IVector, Cloneable, Comparable<AVector>
 	 * @param v
 	 */
 	public void addMultiple(AVector v, double factor) {
-		int vlength=v.length();
+		if (v.length()!=length()) throw new RuntimeException("Source vector has different size!" + v.length());
+		addMultiple(v,factor,0);
+	}
+	
+	public void addMultiple(AVector v, double factor, int srcOffset) {
 		int length=length();
-		if (vlength != length) {
-			throw new IllegalArgumentException("Source vector has different size: " + vlength);
-		}
 		for (int i = 0; i < length; i++) {
-			double x=get(i)+v.get(i)*factor;
+			double x=get(i)+v.get(i+srcOffset)*factor;
 			set(i,x);
 		}
 	}
@@ -692,6 +693,20 @@ public abstract class AVector implements IVector, Cloneable, Comparable<AVector>
 		assert(indexes.length()==len);
 		for (int i=0; i<len ; i++) {
 			set(i, v.get(indexes.get(i)));
+		}
+	}
+
+	public void addToArray(int offset, double[] array, int arrayOffset, int length) {
+		assert(offset+length<length());
+		for (int i=0; i<length; i++) {
+			array[i+arrayOffset]+=get(i+offset);
+		}
+	}
+	
+	public void addMultipleToArray(double factor, int offset, double[] array, int arrayOffset, int length) {
+		assert(offset+length<length());
+		for (int i=0; i<length; i++) {
+			array[i+arrayOffset]+=factor*get(i+offset);
 		}
 	}
 }

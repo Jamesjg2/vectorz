@@ -64,10 +64,59 @@ public abstract class ArrayVector extends AVector {
 		a.copy(offset, length(), this, 0);
 	}
 	
+	@Override 
+	public void add(AVector src) {
+		if (src instanceof ArrayVector) {
+			add ((ArrayVector)src,0);
+			return;
+		}
+		int length=length();
+		src.addToArray(0,getArray(),getArrayOffset(),length);		
+	}
 	
 	public void add(ArrayVector v) {
 		assert(length()==v.length());
 		add(v,0);
+	}
+	
+	@Override
+	public void add(AVector src, int srcOffset) {
+		if (src instanceof ArrayVector) {
+			add ((ArrayVector)src,srcOffset);
+			return;
+		}
+		int length=length();
+		src.addToArray(srcOffset,getArray(),getArrayOffset(),length);
+	}
+	
+	@Override
+	public void addMultiple(AVector v, double factor) {
+		if (v instanceof ArrayVector) {
+			addMultiple ((ArrayVector)v,factor);
+			return;
+		}
+		int length=length();
+		v.addMultipleToArray(factor,0,getArray(),getArrayOffset(),length);
+	}
+	
+	@Override
+	public void addToArray(int offset, double[] array, int arrayOffset, int length) {
+		double[] data=getArray();
+		int dataOffset=getArrayOffset()+offset;
+		
+		for (int i=0; i<length; i++) {
+			array[i+arrayOffset]+=data[i+dataOffset];
+		}
+	}
+	
+	@Override
+	public void addMultipleToArray(double factor,int offset, double[] array, int arrayOffset, int length) {
+		double[] data=getArray();
+		int dataOffset=getArrayOffset()+offset;
+		
+		for (int i=0; i<length; i++) {
+			array[i+arrayOffset]+=factor*data[i+dataOffset];
+		}
 	}
 	
 	public void add(ArrayVector src, int srcOffset) {
